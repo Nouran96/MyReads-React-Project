@@ -1,14 +1,27 @@
 import React, { Component } from 'react'
+import * as BooksAPI from './BooksAPI'
 
 class ManageBooks extends Component {
 
     state = {
-        value: ''
+        value: '',
+        changedShelf: false
     }
 
-    handleChange = (event) => {
+    handleChange = (event, book) => {
+        event.preventDefault()
         this.setState({
             value: event.target.value
+        }, function() {
+            book.shelf = this.state.value
+
+            this.setState({
+                changedShelf: true
+            })
+
+            BooksAPI.update(book, book.shelf)
+
+            this.setState({changedShelf: false})
         })
     }
 
@@ -29,7 +42,7 @@ class ManageBooks extends Component {
                                         {book.hasOwnProperty('imageLinks') && 
                                             (<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>)}
                                             <div className="book-shelf-changer">
-                                            <select value={this.state.value || 'currentlyReading'} onChange={this.handleChange}>
+                                            <select value={book.shelf} onChange={(e) => this.handleChange(e, book)}>
                                                 <option value="move" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>
@@ -60,7 +73,7 @@ class ManageBooks extends Component {
                                         {book.hasOwnProperty('imageLinks') && 
                                             (<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>)}
                                             <div className="book-shelf-changer">
-                                            <select value={this.state.value || 'wantToRead'} onChange={this.handleChange}>
+                                            <select value={book.shelf} onChange={(e) => this.handleChange(e, book)}>
                                                 <option value="move" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>
@@ -91,7 +104,7 @@ class ManageBooks extends Component {
                                         {book.hasOwnProperty('imageLinks') && 
                                             (<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>)}
                                             <div className="book-shelf-changer">
-                                            <select value={this.state.value || 'read'} onChange={this.handleChange}>
+                                            <select value={book.shelf} onChange={(e) => this.handleChange(e, book)}>
                                                 <option value="move" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>
