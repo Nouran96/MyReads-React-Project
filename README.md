@@ -5,7 +5,7 @@ This is a Udacity project that focuses on React.js library. It is a book categor
 Do the following steps:
 1. Download the zipped folder
 2. Unzip it
-3. In a terminal, run `npm start` (You should have node.js and npm installed)
+3. In a terminal, install the required dependencies by running `npm install` then run `npm start` to start the server (You should have node.js and npm installed)
 4. The server will open in the browser and that's it.
 
 ## _Built With_

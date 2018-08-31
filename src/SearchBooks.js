@@ -36,6 +36,9 @@ class SearchBooks extends Component {
                 this.setState({
                     books: books
                 })
+            }).catch((err) => {
+                console.log(err)
+                this.setState({ books: [] })
             })
         }
         else {
