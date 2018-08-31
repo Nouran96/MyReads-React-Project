@@ -8,7 +8,9 @@ import './App.css'
 
 class BooksApp extends React.Component {
   state = {
-    allBooks: []
+    allBooks: [],
+    value: '', // Stores the value of the new shelf
+    changedShelf: false // Detector for changing shelves to re-render
   }
 
   componentDidMount() {
@@ -19,10 +21,36 @@ class BooksApp extends React.Component {
     })
   }
 
+  handleChange = (event, book) => {
+    this.setState({
+        value: event.target.value
+    }, function() {
+        book.shelf = this.state.value
+
+        this.setState({
+            changedShelf: true
+        })
+
+        BooksAPI.update(book, book.shelf)
+
+        this.setState({changedShelf: false})
+    })
+  }
+
+  removeBook = (removedBook) => {
+    this.setState((state) => ({
+      allBooks: state.allBooks.filter(book => book !== removedBook)
+    }))
+  }
+
   render() {
     return (
       <div className="app">
-        <Route path="/search" component={SearchBooks} />
+        <Route path="/search" render={() => {
+          return (
+            <SearchBooks onChoosingShelf={this.handleChange} books={this.state.allBooks}/>
+          )
+        }} />
         
           <Route exact path="/" render={() => {
             return (
@@ -31,7 +59,7 @@ class BooksApp extends React.Component {
                   <h1>MyReads</h1>
                 </div>
                 
-                <ManageBooks books={this.state.allBooks}/>
+                <ManageBooks books={this.state.allBooks} onChangingShelf={this.handleChange} onRemovingBook={this.removeBook}/>
 
                 <div className="open-search">
                   <Link to="/search">Add a book</Link>

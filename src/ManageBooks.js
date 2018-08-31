@@ -1,30 +1,6 @@
 import React, { Component } from 'react'
-import * as BooksAPI from './BooksAPI'
 
 class ManageBooks extends Component {
-
-    state = {
-        value: '',
-        changedShelf: false
-    }
-
-    handleChange = (event, book) => {
-        event.preventDefault()
-        this.setState({
-            value: event.target.value
-        }, function() {
-            book.shelf = this.state.value
-
-            this.setState({
-                changedShelf: true
-            })
-
-            BooksAPI.update(book, book.shelf)
-
-            this.setState({changedShelf: false})
-        })
-    }
-
 
     render() {
         return (
@@ -35,14 +11,18 @@ class ManageBooks extends Component {
                     <div className="bookshelf-books">
                         <ol className="books-grid">
                             {this.props.books.map(book => {
-                                return book.shelf === 'currentlyReading' && (
+                                return book.shelf === 'currentlyReading' && ( // Displays only books in this shelf
                                     <li key={book.id}>
                                         <div className="book">
                                         <div className="book-top">
                                         {book.hasOwnProperty('imageLinks') && 
                                             (<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>)}
                                             <div className="book-shelf-changer">
-                                            <select value={book.shelf} onChange={(e) => this.handleChange(e, book)}>
+                                            <select value={book.shelf} onChange={(e) => {
+                                                this.props.onChangingShelf(e, book)
+                                                if(book.shelf === 'none')
+                                                    this.props.onRemovingBook(book)
+                                            }}>
                                                 <option value="move" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>
@@ -73,7 +53,7 @@ class ManageBooks extends Component {
                                         {book.hasOwnProperty('imageLinks') && 
                                             (<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>)}
                                             <div className="book-shelf-changer">
-                                            <select value={book.shelf} onChange={(e) => this.handleChange(e, book)}>
+                                            <select value={book.shelf} onChange={(e) => this.props.onChangingShelf(e, book)}>
                                                 <option value="move" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>
@@ -104,7 +84,7 @@ class ManageBooks extends Component {
                                         {book.hasOwnProperty('imageLinks') && 
                                             (<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>)}
                                             <div className="book-shelf-changer">
-                                            <select value={book.shelf} onChange={(e) => this.handleChange(e, book)}>
+                                            <select value={book.shelf} onChange={(e) => this.props.onChangingShelf(e, book)}>
                                                 <option value="move" disabled>Move to...</option>
                                                 <option value="currentlyReading">Currently Reading</option>
                                                 <option value="wantToRead">Want to Read</option>

@@ -7,6 +7,7 @@ class SearchBooks extends Component {
     state = {
         query: '',
         books: [],
+        bookShelf: ''
     }
 
     updateQuery = (query) => {
@@ -17,6 +18,21 @@ class SearchBooks extends Component {
 
         if(query) {
             BooksAPI.search(query).then(books => {
+                // Compare search results with displayed books on main page to both have the same shelf
+                books.map(searchedBook => {
+                    this.props.books.map(displayedBook => {
+                        if(displayedBook.id === searchedBook.id){
+                            searchedBook.shelf = displayedBook.shelf
+                        }
+
+                        return true
+                    })
+                    if(searchedBook.shelf === undefined)
+                        searchedBook.shelf = 'none'
+
+                    return true
+                })
+
                 this.setState({
                     books: books
                 })
@@ -27,6 +43,16 @@ class SearchBooks extends Component {
                 books: []
             })
         }
+    }
+
+    // Add books to shelf and make sure that if there is a duplicate of it on main page to remove it
+    addBookToShelf = (book) => {
+        this.props.books.forEach((displayedBook, index) => {
+            if(displayedBook.id === book.id) {
+                this.props.books.splice(index, 1)
+            }
+        })
+        this.props.books.push(book)
     }
 
     render() {
@@ -61,7 +87,10 @@ class SearchBooks extends Component {
                               (<div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>)}
                                 
                                 <div className="book-shelf-changer">
-                                  <select>
+                                  <select value={book.shelf} onChange={(e) => {
+                                      this.props.onChoosingShelf(e, book)
+                                      this.addBookToShelf(book)
+                                  }}>
                                     <option value="move" disabled>Move to...</option>
                                     <option value="currentlyReading">Currently Reading</option>
                                     <option value="wantToRead">Want to Read</option>
